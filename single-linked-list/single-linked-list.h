@@ -217,7 +217,7 @@ public:
     [[nodiscard]] bool IsEmpty() const noexcept
     {
         // Заглушка. Реализуйте метод самостоятельно
-        return (head_.next_node == nullptr ? true : false);
+        return (head_.next_node == nullptr);
     }
 
     void PushFront(const Type& value)
@@ -275,7 +275,7 @@ public:
 
     SingleLinkedList& operator=(const SingleLinkedList& rhs)
     {
-        if (this->head_.next_node == rhs.head_.next_node)
+        if (this == rhs)
         {
             return *this;
         }
@@ -317,11 +317,12 @@ public:
      */
     Iterator InsertAfter(ConstIterator pos, const Type& value)
     {
-        Node* curr = &head_;
+        /*Node* curr = &head_;
         while (ConstIterator(curr) != pos)
         {
             curr = curr->next_node;
-        }
+        }*/
+        Node* curr = pos.node_;
         Node* new_node = new Node(value, curr->next_node);
         curr->next_node = new_node;
         ++size_;
@@ -330,11 +331,11 @@ public:
 
     void PopFront() noexcept
     {
-        // Реализуйте метод самостоятельно
         Node* curr = head_.next_node;
         curr = curr->next_node;
         delete head_.next_node;
         head_.next_node = curr;
+        --size_;
     }
 
     /*
@@ -343,14 +344,16 @@ public:
      */
     Iterator EraseAfter(ConstIterator pos) noexcept
     {
-        Node* curr = &head_;
+        /*Node* curr = &head_;
         while (ConstIterator(curr) != pos)
         {
             curr = curr->next_node;
-        }
+        }*/
+        Node* curr = pos.node_;
         Node* to_delete = curr->next_node;
         curr->next_node = to_delete->next_node;
         delete to_delete;
+        --size_;
         return Iterator(curr->next_node);
     }
 
@@ -374,6 +377,10 @@ void swap(SingleLinkedList<Type>& lhs, SingleLinkedList<Type>& rhs) noexcept
 template <typename Type>
 bool operator==(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs)
 {
+    if (lhs.GetSize() != rhs.GetSize() || (*(lhs.begin()) != *(rhs.begin())))
+    {
+        return false;
+    }
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
